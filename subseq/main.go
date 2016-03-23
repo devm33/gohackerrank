@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func solve(values []int, weights []int) {
-	fmt.Printf("TODO solve for: %v, %v", &values, &weights)
+	fmt.Printf("TODO solve for: %v, %v\n", &values, &weights)
 }
 
 func readIntLine(count int) []int {
