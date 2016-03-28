@@ -2,26 +2,50 @@ package main
 
 import "fmt"
 
-func solve(values []int, weights []int) {
-	fmt.Printf("TODO solve for: %v, %v\n", &values, &weights)
+type pair struct {
+	value  int
+	weight int
 }
 
-func readIntLine(count int) []int {
-	var slice = make([]int, count)
-	var v int
-	for i := range slice {
-		fmt.Scanf("%d", &v)
-		slice[i] = v
+func solve(N int, list []pair) {
+	// fmt.Printf("TODO solve for: %v\n", &list)
+	var best = make([]pair, N)
+	var max int
+	copy(best, list)
+	for i := 1; i < N; i++ {
+		max = 0
+		for j := i - 1; j >= 0; j-- {
+			if best[j].value < best[i].value && best[j].weight > max {
+				max = best[j].weight
+			}
+		}
+		best[i].weight += max
 	}
-	return slice
+	max = 0
+	for _, p := range best {
+		if max < p.weight {
+			max = p.weight
+		}
+	}
+	fmt.Printf("%v\n", max)
 }
 
 func main() {
 	var num_test_cases int
 	var N int
+	var v int
 	fmt.Scanf("%d\n", &num_test_cases)
 	for i := 0; i < num_test_cases; i++ {
 		fmt.Scanf("%d\n", &N)
-		solve(readIntLine(N), readIntLine(N))
+		var list = make([]pair, N)
+		for i := range list {
+			fmt.Scanf("%d", &v)
+			list[i].value = v
+		}
+		for i := range list {
+			fmt.Scanf("%d", &v)
+			list[i].weight = v
+		}
+		solve(N, list)
 	}
 }
