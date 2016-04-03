@@ -9,7 +9,7 @@ type Trie struct {
 }
 
 func makeTrie(value string) Trie {
-	return Trie{1, value, make(map[string]Trie)}
+	return Trie{1, value, make(map[uint8]Trie)}
 }
 
 func getCommonPrefix(a, b string) (string, string, string) {
@@ -26,39 +26,39 @@ func getCommonPrefix(a, b string) (string, string, string) {
 }
 
 func add(root Trie, val string) {
-	var first_byte = val[0]
+	first_byte := val[0]
+	add_value := val[1:]
 	root.count++
-	t, ok := root.children[first_byte]
+	cur, ok := root.children[first_byte]
 	if ok {
 		/* cases at this point:
-		t.value and val[1:]
+		cur.value and add_value
 		- have no common prefix
-		- t.value is a prefix of val[1:]
-		- val[1:] is a prefix of t.value
+		- cur.value is a prefix of add_value
+		- add_value is a prefix of cur.value
 		- have some common prefix
 		*/
-		common_prefix, rem_t_value, added_value := getCommonPrefix(t.value, val[1:])
+		common_prefix, rem_cur_value, rem_add_value := getCommonPrefix(cur.value, add_value)
 		if len(common_prefix) == 0 {
-			rem_trie := makeTrie(rem_t_value[1:], t.children)
-			new_trie := makeTrie(val[2:])
-			t.children = make(map[string]Trie)
-			t.children[rem_t_value[0]] = rem_trie
-			t.chidlren[val[1]] = new_trie
-		} else if // two more cases
-		} else
-			rem_trie := makeTrie(rem_value[1:])
-			rem_trie.children = t.children
-			t.children = make(map[string]Trie)
-			t.children[rem_value[0]] = rem_trie
-			t.children[added_value[0]] = makeTrie(added_value[1:])
+			rem_trie := Trie{cur.count, rem_cur_value[1:], cur.children}
+			new_trie := makeTrie(add_value[1:])
+			cur.children = make(map[uint8]Trie)
+			cur.children[rem_cur_value[0]] = rem_trie
+			cur.children[add_value[0]] = new_trie
+			cur.count = cur.count + 1
+		} else if len(rem_cur_value) == 0 {
+
+		} else if len(rem_add_value) == 0 {
+
 		} else {
-
+			rem_trie := makeTrie(rem_cur_value[1:])
+			rem_trie.children = cur.children
+			cur.children = make(map[uint8]Trie)
+			cur.children[rem_cur_value[0]] = rem_trie
+			cur.children[rem_add_value[0]] = makeTrie(rem_add_value[1:])
 		}
-
-		// TODO go deeper
-
 	} else {
-		root.children[first_byte] = makeTrie(val[1:])
+		root.children[first_byte] = makeTrie(add_value)
 	}
 }
 
