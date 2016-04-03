@@ -30,10 +30,23 @@ func add(root Trie, val string) {
 	root.count++
 	t, ok := root.children[first_byte]
 	if ok {
-		new_t_value, rem_t_value, added_value = getCommonPrefix(t.value, val[1:])
-		if new_t_value == // TODO this and more cases here
-		else if len(new_t_value) > 0 {
-			var rem_trie = makeTrie(rem_value[1:])
+		/* cases at this point:
+		t.value and val[1:]
+		- have no common prefix
+		- t.value is a prefix of val[1:]
+		- val[1:] is a prefix of t.value
+		- have some common prefix
+		*/
+		common_prefix, rem_t_value, added_value := getCommonPrefix(t.value, val[1:])
+		if len(common_prefix) == 0 {
+			rem_trie := makeTrie(rem_t_value[1:], t.children)
+			new_trie := makeTrie(val[2:])
+			t.children = make(map[string]Trie)
+			t.children[rem_t_value[0]] = rem_trie
+			t.chidlren[val[1]] = new_trie
+		} else if // two more cases
+		} else
+			rem_trie := makeTrie(rem_value[1:])
 			rem_trie.children = t.children
 			t.children = make(map[string]Trie)
 			t.children[rem_value[0]] = rem_trie
