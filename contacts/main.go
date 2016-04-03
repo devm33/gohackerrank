@@ -8,7 +8,7 @@ type Trie struct {
 	children map[uint8]Trie
 }
 
-func makeTrie(value string) Trie {
+func makeLeafTrie(value string) Trie {
 	return Trie{1, value, make(map[uint8]Trie)}
 }
 
@@ -39,37 +39,47 @@ func add(root Trie, val string) {
 		- have some common prefix
 		*/
 		common_prefix, rem_cur_value, rem_add_value := getCommonPrefix(cur.value, add_value)
-		if len(common_prefix) == 0 {
+		if len(common_prefix) == 0 { // no common prefix, add under empty value
 			rem_trie := Trie{cur.count, rem_cur_value[1:], cur.children}
-			new_trie := makeTrie(add_value[1:])
+			new_trie := makeLeafTrie(add_value[1:])
+			cur.value = ""
 			cur.children = make(map[uint8]Trie)
 			cur.children[rem_cur_value[0]] = rem_trie
 			cur.children[add_value[0]] = new_trie
-			cur.count = cur.count + 1
-		} else if len(rem_cur_value) == 0 {
-
-		} else if len(rem_add_value) == 0 {
-
-		} else {
-			rem_trie := makeTrie(rem_cur_value[1:])
-			rem_trie.children = cur.children
+			cur.count += 1
+		} else if len(rem_cur_value) == 0 { // add under cur
+			add(cur, add_value)
+		} else if len(rem_add_value) == 0 { // add rem cur under
+			// TODO last case
+		} else { // some common prefix, need to split
+			rem_trie := Trie{cur.count, rem_cur_value[1:], cur.children}
+			cur.value = common_prefix
 			cur.children = make(map[uint8]Trie)
 			cur.children[rem_cur_value[0]] = rem_trie
-			cur.children[rem_add_value[0]] = makeTrie(rem_add_value[1:])
+			cur.children[rem_add_value[0]] = makeLeafTrie(rem_add_value[1:])
+			cur.count += 1
 		}
 	} else {
-		root.children[first_byte] = makeTrie(add_value)
+		root.children[first_byte] = makeLeafTrie(add_value)
 	}
 }
 
-func find(root Trie, sub string) int {
-	return 0
+func findCount(root Trie, sub string) int {
+	cur := root
+	var ok bool
+	for i := 0; i < len(sub); i++ {
+		cur, ok = root.children[sub[i]]
+		if !ok {
+			return 0
+		}
+	}
+	return cur.count
 }
 
 func main() {
 	var N int
 	fmt.Scan(&N)
-	var root = makeTrie("")
+	var root = makeLeafTrie("")
 	root.count = 0
 	var command, arg string
 	for i := 1; i <= N; i++ {
@@ -77,7 +87,7 @@ func main() {
 		if command == "add" {
 			add(root, arg)
 		} else if command == "find" {
-			find(root, arg)
+			findCount(root, arg)
 		}
 	}
 }
