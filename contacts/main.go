@@ -26,6 +26,7 @@ func getCommonPrefix(a, b string) (string, string, string) {
 }
 
 func add(root Trie, val string) {
+	fmt.Printf("Adding %s to node, value %s\n", val, root.value)
 	first_byte := val[0]
 	add_value := val[1:]
 	root.count++
@@ -48,7 +49,7 @@ func add(root Trie, val string) {
 			cur.children[add_value[0]] = new_trie
 			cur.count += 1
 		} else if len(rem_cur_value) == 0 { // add under cur
-			add(cur, add_value)
+			add(cur, rem_add_value)
 		} else if len(rem_add_value) == 0 { // add rem cur under
 			// TODO last case
 		} else { // some common prefix, need to split
@@ -60,6 +61,7 @@ func add(root Trie, val string) {
 			cur.count += 1
 		}
 	} else {
+		fmt.Printf("First byte %s not found in node (value %s)\n", string(first_byte), root.value)
 		root.children[first_byte] = makeLeafTrie(add_value)
 	}
 }
@@ -76,6 +78,16 @@ func findCount(root Trie, sub string) int {
 	return cur.count
 }
 
+func printTrie(val uint8, root Trie, indent int) {
+	for i := 0; i < indent; i++ {
+		fmt.Print("  ")
+	}
+	fmt.Printf("%s -> value=%s count=%d \n", string(val), root.value, root.count)
+	for v, c := range root.children {
+		printTrie(v, c, indent+1)
+	}
+}
+
 func main() {
 	var N int
 	fmt.Scan(&N)
@@ -86,8 +98,9 @@ func main() {
 		fmt.Scanf("%s %s", &command, &arg)
 		if command == "add" {
 			add(root, arg)
+			printTrie(0, root, 0)
 		} else if command == "find" {
-			findCount(root, arg)
+			fmt.Println(findCount(root, arg))
 		}
 	}
 }
