@@ -67,9 +67,11 @@ func add(root Trie, val string) {
 }
 
 func findCount(root Trie, sub string) int {
+	fmt.Printf("Finding count for %s\n", sub)
 	cur := root
 	var ok bool
 	for i := 0; i < len(sub); i++ {
+		// TODO need to match on cur.value here before looking at children
 		cur, ok = root.children[sub[i]]
 		if !ok {
 			return 0
@@ -80,7 +82,7 @@ func findCount(root Trie, sub string) int {
 
 func printTrie(val uint8, root Trie, indent int) {
 	for i := 0; i < indent; i++ {
-		fmt.Print("  ")
+		fmt.Print("    ")
 	}
 	fmt.Printf("%s -> value=%s count=%d \n", string(val), root.value, root.count)
 	for v, c := range root.children {
